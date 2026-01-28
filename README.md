@@ -23,9 +23,9 @@ Develop SQL based analytics to deliver detailed insights into:
 *Customer behaviour
 *Product performance
 *Sales trends
-# This empowers decision makers to make informed decisions
+### This empowers decision makers to make informed decisions
 
-## The licensing is under MIT and is free to use, modify and share
+### The licensing is under MIT and is free to use, modify and share
 
 ## About me
 
