@@ -6,7 +6,7 @@ Script purpose:
   additionally, the script sets up three schemas: bronze, silver and gold
 
 Warning:
-  running this script will dro the entire 'Datawarehouse' databse if it exists.
+  running this script will drop the entire 'Datawarehouse' database if it exists.
   all data in the database will be permanently deleted
   process with caution and ensure you have back ups */
 ====================================
