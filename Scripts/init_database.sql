@@ -10,7 +10,7 @@ Warning:
   all data in the database will be permanently deleted
   process with caution and ensure you have back ups */
 ====================================
-use master
+use master;
 go
 
 if exists(select 1 from sys.database where name = 'datawarehouse')
