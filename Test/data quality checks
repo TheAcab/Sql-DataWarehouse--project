@@ -1,1 +1,159 @@
+Data quality checks between bronze and silver layers
 
+
+
+
+select distinct bdate
+from silver.erp_cust_az12
+where bdate < '1924' 
+or bdate > GETDATE ()  --checking ofr date prior to 1924 and dates in the future
+
+select distinct gen
+from silver .erp_cust_az12
+
+select distinct
+gen,
+case when upper(trim(gen)) in ('F', 'FEMALE') then 'Female'
+when upper(trim(gen)) in ('M','MALE') then 'Male'
+else 'n/a'
+end as gen
+from bronze.erp_cust_az12
+
+--check for nulls or duplicates in primary key
+--expectation: no results
+
+select
+prd_id,
+count (*)
+from silver.crm_prd_info
+group by prd_id
+having count(*) > 1 or  prd_id is null
+
+--check for unwated spaces
+--expectation; no results
+
+select prd_nm
+from silver.crm_prd_info
+where prd_nm != trim (prd_nm)
+
+--check for nulls or negatives
+--expectation: no results
+
+select prd_cost
+from silver.crm_prd_info
+where prd_cost < 0 or prd_cost is null
+
+--data standardization & consistency
+
+select distinct prd_line
+from silver.crm_prd_info
+
+select
+prd_id,
+prd_key,
+prd_nm,
+prd_start_dt,
+prd_end_dt,
+lead (prd_start_dt) over (partition by prd_key order by prd_start_dt) -1 as prd_end_dt_test
+from bronze.crm_prd_info
+where prd_key in ('AC-HE-HL-U509-R' , 'AC-HE-HL-U509' )
+
+--check for invalid dates
+select * 
+from silver.crm_prd_info
+where prd_end_dt < prd_start_dt
+
+select *
+from silver.crm_prd_info
+
+--check for nulls or duplicates in primary key (cst_id)
+--expectation: no result
+
+use DataWarehouse
+
+select *
+from bronze.crm_cust_info
+
+select
+cst_id,
+count (*)
+from silver.crm_cust_info
+group by cst_id
+having count (*)>1 or cst_id is null--this displays duplicates in the cst_id column
+
+--check for unwated spaces
+--expectation: no results
+select  cst_lastname
+from silver.crm_cust_info
+where cst_lastname ! = trim (cst_lastname) -- here we check for values with leading or trailing spaces
+
+--data standardisation & consistency
+select distinct cst_gndr
+from silver.crm_cust_info	--to view all distinc values in a column
+
+select distinct cst_material_status
+from silver.crm_cust_info	
+
+select *
+
+from silver.
+
+
+--check for nulls or duplicates in primary key (cst_id)
+--expectation: no result
+
+
+select *
+from bronze.crm_cust_info
+where cst_id = 29466 --here selected one of the lines that is a duplicate
+
+
+select *,
+ROW_NUMBER () over (partition by cst_id order by cst_create_date desc) as flag_last
+from bronze.crm_cust_info-- here we flag and number the list of duplicates in descending order of dates
+
+/*select * from
+(select *,
+ROW_NUMBER () over (partition by cst_id order by cst_create_date desc) as flag_last
+from bronze.crm_cust_info
+t where cst_id is not null) t
+where flag_last = 1 */
+use DataWarehouse
+
+select *
+from bronze.crm_cust_info
+
+select
+cst_id,
+count (*)
+from bronze.crm_cust_info
+group by cst_id
+having count (*)>1 or cst_id is null--this displays duplicates in the cst_id column
+
+--check for unwated spaces
+--expectation: no results
+select  cst_gndr
+from bronze.crm_cust_info
+where cst_gndr ! = trim (cst_gndr) -- here we check for values with leading or trailing spaces
+
+--data standardisation & consistency
+select distinct cst_gndr
+from bronze.crm_cust_info	--to view all distinc values in a column
+
+select distinct cst_material_status
+from bronze.crm_cust_info	
+select *
+from bronze.crm_cust_info
+where cst_id = 29466 --here selected one of the lines that is a duplicate
+
+
+select *,
+ROW_NUMBER () over (partition by cst_id order by cst_create_date desc) as flag_last
+from bronze.crm_cust_info-- here we flag and number the list of duplicates in descending order of dates
+
+/*select * from
+(select *,
+ROW_NUMBER () over (partition by cst_id order by cst_create_date desc) as flag_last
+from bronze.crm_cust_info
+t where cst_id is not null) t
+where flag_last = 1 */
